@@ -1,9 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import { optionsData } from './data/optionsData'
 import './index.css'
 
 function App() {
-  // Version 0.1.0 - Triggering Deployment
+  const [currentPage, setCurrentPage] = useState('generator')
   const [activeTab, setActiveTab] = useState(optionsData[0].category)
   const [playerName, setPlayerName] = useState('TestPlayer')
   const [options, setOptions] = useState(() => {
@@ -15,6 +15,8 @@ function App() {
     })
     return initialState
   })
+
+  // ─── YAML Logic ──────────────────────────────────────────────────────────
 
   const yamlPreview = useMemo(() => {
     let yaml = `# ─── No Rest For The Wicked — Archipelago Player Config ───\n\n`
@@ -40,6 +42,7 @@ function App() {
   }
 
   const toggleAllDrops = () => {
+    const activeCategory = optionsData.find(cat => cat.category === activeTab)
     const dropOptions = activeCategory.options
       .filter(opt => opt.name.startsWith('replace_'))
       .map(opt => opt.name)
@@ -64,15 +67,98 @@ function App() {
     URL.revokeObjectURL(url)
   }
 
-  const activeCategory = optionsData.find(cat => cat.category === activeTab)
+  // ─── Render Components ────────────────────────────────────────────────────
 
-  return (
-    <div id="root">
-      <header>
-        <h1>NRFTW YAML Generator</h1>
-        <p>Configure your No Rest For The Wicked Archipelago experience</p>
-      </header>
+  const renderRequirements = () => (
+    <div className="content-page">
+      <div className="info-section">
+        <h2>Requirements & Progress</h2>
+        <p>
+          The NRFTW Archipelago integration is currently in early development. This mod allows you to
+          experience "No Rest For The Wicked" as part of a multiworld randomizer.
+        </p>
 
+        <h3>What's Randomized?</h3>
+        <ul>
+          <li><strong>Abilities/Features</strong>: Swimming, Climbing, Dodging, etc., can be locked behind items.</li>
+          <li><strong>Drops</strong>: Enemy loot, chests, and shinies can contain items for other players.</li>
+          <li><strong>Progression</strong>: World locations send checks when you complete activities or reach milestones.</li>
+        </ul>
+
+        <div className="media-placeholder">
+          [ GIF/Screenshot: Ability Lock in Action ]
+        </div>
+
+        <h3>Development Status</h3>
+        <p>
+          We are currently in a "Functional Alpha" state. Core mechanics work, but balancing and new features
+          are being added constantly.
+        </p>
+
+        <div className="media-placeholder">
+          [ Screenshot: Archipelago Connection UI ]
+        </div>
+      </div>
+    </div>
+  )
+
+  const renderSetup = () => (
+    <div className="content-page">
+      <div className="info-section">
+        <h2>Setup Guide</h2>
+        <p>Follow these steps to get your NRFTW Archipelago run started:</p>
+
+        <ol>
+          <li>
+            <strong>Install the Mod</strong>: Download the latest NRFTW Archipelago Mod from
+            <a href="#" className="link-button">GitHub Releases</a>.
+          </li>
+          <li>
+            <strong>Archipelago Setup</strong>: Ensure you have the latest Archipelago software installed.
+          </li>
+          <li>
+            <strong>Generate Configuration</strong>: Use the Generator tab on this site to create your YAML file.
+          </li>
+          <li>
+            <strong>Patch Your Game</strong>: Follow the instructions in the README of the mod repository to apply the Harmony patches.
+          </li>
+        </ol>
+
+        <p>Need help? Check the Discord link in the Help tab.</p>
+      </div>
+    </div>
+  )
+
+  const renderHelp = () => (
+    <div className="content-page">
+      <div className="info-section">
+        <h2>Help & Community</h2>
+        <p>
+          Join our community to report bugs, suggest features, or find other players for multiworld runs!
+        </p>
+
+        <a href="https://discord.gg/archipelago" className="link-button">Join Archipelago Discord</a>
+
+        <h3>Future Plans</h3>
+        <ul>
+          <li>Enhanced Item Randomization weights.</li>
+          <li>Custom Area/Region logic.</li>
+          <li>Integration with more in-game systems (Housing, Crafting).</li>
+        </ul>
+
+        <h3>How You Can Help</h3>
+        <p>
+          We are looking for testers! Play the mod, find bugs, and share your feedback in the discord channel.
+          If you are a developer, feel free to contribute to the
+          <a href="https://github.com/arthurstreeter/NRFTW-Archipelago-APWorld-Generator" className="link-button">GitHub Repository</a>.
+        </p>
+      </div>
+    </div>
+  )
+
+  const renderGenerator = () => {
+    const activeCategory = optionsData.find(cat => cat.category === activeTab)
+    return (
       <div className="app-container">
         <div className="settings-panel">
           <input
@@ -160,6 +246,51 @@ function App() {
           </button>
         </div>
       </div>
+    )
+  }
+
+  // ─── Main Render ──────────────────────────────────────────────────────────
+
+  return (
+    <div id="root">
+      <nav className="nav-bar">
+        <button
+          className={`nav-link ${currentPage === 'requirements' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('requirements')}
+        >
+          Requirements
+        </button>
+        <button
+          className={`nav-link ${currentPage === 'setup' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('setup')}
+        >
+          Setup
+        </button>
+        <button
+          className={`nav-link ${currentPage === 'generator' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('generator')}
+        >
+          YAML Generator
+        </button>
+        <button
+          className={`nav-link ${currentPage === 'help' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('help')}
+        >
+          Help
+        </button>
+      </nav>
+
+      <header>
+        <h1>NRFTW ARCHIPELAGO</h1>
+        <p>No Rest For The Wicked Multiworld Randomizer</p>
+      </header>
+
+      <main className="main-content">
+        {currentPage === 'requirements' && renderRequirements()}
+        {currentPage === 'setup' && renderSetup()}
+        {currentPage === 'generator' && renderGenerator()}
+        {currentPage === 'help' && renderHelp()}
+      </main>
     </div>
   )
 }

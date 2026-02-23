@@ -3,6 +3,7 @@ import { optionsData } from './data/optionsData'
 import './index.css'
 
 function App() {
+  // Version 0.1.0 - Triggering Deployment
   const [activeTab, setActiveTab] = useState(optionsData[0].category)
   const [playerName, setPlayerName] = useState('TestPlayer')
   const [options, setOptions] = useState(() => {

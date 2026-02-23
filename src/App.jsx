@@ -2,6 +2,11 @@ import React, { useState, useMemo } from 'react'
 import { optionsData } from './data/optionsData'
 import './index.css'
 
+// Import assets
+import FeatureBlockSample from './assets/FeatureBlockSample.png'
+import IngameMenu from './assets/IngameMenu.png'
+import SampleUnlocks from './assets/SampleUnlocks.mp4'
+
 function App() {
   const [currentPage, setCurrentPage] = useState('generator')
   const [activeTab, setActiveTab] = useState(optionsData[0].category)
@@ -85,8 +90,9 @@ function App() {
           <li><strong>Progression</strong>: World locations send checks when you complete activities or reach milestones.</li>
         </ul>
 
-        <div className="media-placeholder">
-          [ GIF/Screenshot: Ability Lock in Action ]
+        <div className="media-container">
+          <img src={FeatureBlockSample} alt="Feature Lock Sample" className="media-element" />
+          <p className="media-caption">Example of a world feature (Swimming) being locked until the item is found.</p>
         </div>
 
         <h3>Development Status</h3>
@@ -95,8 +101,17 @@ function App() {
           are being added constantly.
         </p>
 
-        <div className="media-placeholder">
-          [ Screenshot: Archipelago Connection UI ]
+        <div className="media-container">
+          <video controls className="media-element">
+            <source src={SampleUnlocks} type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+          <p className="media-caption">Video demonstration of real-time item unlocks and notifications.</p>
+        </div>
+
+        <div className="media-container">
+          <img src={IngameMenu} alt="In-game Menu" className="media-element" />
+          <p className="media-caption">The custom Archipelago integration menu within No Rest For The Wicked.</p>
         </div>
       </div>
     </div>

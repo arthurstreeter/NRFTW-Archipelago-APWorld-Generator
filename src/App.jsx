@@ -39,6 +39,21 @@ function App() {
     setOptions(prev => ({ ...prev, [name]: value }))
   }
 
+  const toggleAllDrops = () => {
+    const dropOptions = activeCategory.options
+      .filter(opt => opt.name.startsWith('replace_'))
+      .map(opt => opt.name)
+
+    const allOn = dropOptions.every(name => options[name] === 1)
+    const nextVal = allOn ? 0 : 1
+
+    const newOptions = { ...options }
+    dropOptions.forEach(name => {
+      newOptions[name] = nextVal
+    })
+    setOptions(newOptions)
+  }
+
   const downloadYaml = () => {
     const blob = new Blob([yamlPreview], { type: 'text/yaml' })
     const url = URL.createObjectURL(blob)
@@ -79,6 +94,13 @@ function App() {
               </button>
             ))}
           </div>
+
+          {activeTab === 'Randomization' && (
+            <button className="category_action_btn" onClick={toggleAllDrops}>
+              {activeCategory.options.filter(o => o.name.startsWith('replace_')).every(n => options[n.name] === 1)
+                ? 'Disable All Drops' : 'Randomize All Drops'}
+            </button>
+          )}
 
           <div className="option-group">
             {activeCategory.options.map(opt => (

@@ -1,7 +1,8 @@
 :root {
   --bg-color: #0d0d12;
   --panel-bg: #16161e;
-  --accent-color: #c9a227; /* Gold/Amber like NRFTW */
+  --accent-color: #c9a227;
+  /* Gold/Amber like NRFTW */
   --accent-glow: rgba(201, 162, 39, 0.3);
   --text-primary: #e1e1e6;
   --text-secondary: #9494a6;
@@ -109,6 +110,27 @@ header p {
   background: var(--hover-bg);
 }
 
+.category_action_btn {
+  margin-bottom: 20px;
+  padding: 12px;
+  background: var(--hover-bg);
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition-speed);
+  text-transform: uppercase;
+  font-size: 0.9rem;
+  letter-spacing: 1px;
+}
+
+.category_action_btn:hover {
+  background: var(--accent-color);
+  color: #000;
+  box-shadow: 0 0 15px var(--accent-glow);
+}
+
 .option-group {
   display: flex;
   flex-direction: column;
@@ -117,8 +139,15 @@ header p {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .option-item {
@@ -210,11 +239,11 @@ input[type="range"] {
   border-radius: 50%;
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: var(--accent-color);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(26px);
 }
 

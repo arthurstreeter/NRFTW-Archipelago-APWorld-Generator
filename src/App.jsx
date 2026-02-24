@@ -9,7 +9,7 @@ import SampleUnlocks from './assets/SampleUnlocks.mp4'
 import ModsDirectory from './assets/ModsDirectory.png'
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('generator')
+  const [currentPage, setCurrentPage] = useState('about')
   const [activeTab, setActiveTab] = useState(optionsData[0].category)
   const [playerName, setPlayerName] = useState('PlayerName')
   const [options, setOptions] = useState(() => {
@@ -240,6 +240,7 @@ function App() {
           <li>Enhanced Item Randomization weights.</li>
           <li>Custom Area/Region logic.</li>
           <li>Integration with more in-game systems (Housing, Crafting, Custom Boons, Plague, etc...).</li>
+          <li>More Polish!</li>
         </ul>
 
         <h3>How You Can Help</h3>

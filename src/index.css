@@ -128,8 +128,8 @@ body {
 
 .link-button {
   display: inline-block;
-  margin: 10px 10px 10px 0;
-  padding: 12px 24px;
+  margin: 0px 10px 0px 10px;
+  padding: 2px 6px;
   background: var(--accent-color);
   color: #000;
   text-decoration: none;

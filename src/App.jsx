@@ -75,20 +75,22 @@ function App() {
 
   // ─── Render Components ────────────────────────────────────────────────────
 
-  const renderRequirements = () => (
+  const renderAbout = () => (
     <div className="content-page">
       <div className="info-section">
-        <h2>Requirements & Progress</h2>
+        <h2>About No Rest For The Wicked Archipelago</h2>
         <p>
-          The NRFTW Archipelago integration is currently in early development. This mod allows you to
-          experience "No Rest For The Wicked" as part of a multiworld randomizer.
+          The TheSchlooper's NRFTW Archipelago integration is currently in early development. This mod allows you to
+          experience "No Rest For The Wicked" as part of a multiworld randomizer via Archipelago's AP World integration.
         </p>
 
         <h3>What's Randomized?</h3>
         <ul>
-          <li><strong>Abilities/Features</strong>: Swimming, Climbing, Dodging, etc., can be locked behind items.</li>
-          <li><strong>Drops</strong>: Enemy loot, chests, and shinies can contain items for other players.</li>
-          <li><strong>Progression</strong>: World locations send checks when you complete activities or reach milestones.</li>
+          <li><strong>Enemies</strong>: Enemies can be randomized.</li>
+          <li><strong>Items</strong>: All drops can be randomized based on user preferences.</li>
+          <li><strong>Abilities/Features</strong>: Swimming, Climbing, Dodging, etc., can be locked behind checks.</li>
+          <li><strong>Random Spawn</strong>: Starting Point can be determined on run.</li>
+          <li><strong>Progression</strong>: Shinies, Chests, Unique Enemy Kills, Parries, Harvesting, Crucible Runs, Activities, and more can trigger checks.</li>
         </ul>
 
         <div className="media-container">
@@ -98,8 +100,8 @@ function App() {
 
         <h3>Development Status</h3>
         <p>
-          We are currently in a "Functional Alpha" state. Core mechanics work, but balancing and new features
-          are being added constantly.
+          This is currently in a "Functional Alpha" state. Core mechanics work more or less, but balancing and new features
+          are being added.
         </p>
 
         <div className="media-container">
@@ -107,12 +109,12 @@ function App() {
             <source src={SampleUnlocks} type="video/mp4" />
             Your browser does not support the video tag.
           </video>
-          <p className="media-caption">Video demonstration of real-time item unlocks and notifications.</p>
+          <p className="media-caption">Demonstration of real-time item unlocks and notifications.</p>
         </div>
 
         <div className="media-container">
           <img src={IngameMenu} alt="In-game Menu" className="media-element" />
-          <p className="media-caption">The custom Archipelago integration menu within No Rest For The Wicked.</p>
+          <p className="media-caption">The custom F1 Menu Screen for convenient access. FastTravel Menu WIP.</p>
         </div>
       </div>
     </div>
@@ -139,7 +141,18 @@ function App() {
             <strong>Send your YAML To Host</strong>: They will add it to their server.
           </li>
           <li>
-            <strong>Create AP Config file</strong>: Create a new AP config file in the GameDir/Mods folder, next to the other DLLs, named <span className="code-text">archipelago_config.json</span><div className="media-container">
+            <strong>Create AP Config file</strong>: Create a new AP config file in the GameDir/Mods folder, next to the other DLLs, named <span className="code-text">archipelago_config.json</span>
+
+            <p>Sample JSON Config:</p>
+            <pre className="code-text" style={{ textAlign: 'left', padding: '10px', borderRadius: '5px' }}>
+              {`{
+  "host": "127.0.0.1:42069",
+  "slot_name": "TheSchlooper",
+  "password": "",
+  "auto_connect": true
+}`}
+            </pre>
+            <div className="media-container">
               <img src={ModsDirectory} alt="Mods Directory" className="media-element" style={{ width: '50%', height: '50%', objectFit: 'contain', margin: 'auto' }} />
               <p className="media-caption">The mods directory with the Archipelago config file.</p>
             </div>
@@ -156,25 +169,16 @@ function App() {
 
         <ol>
           <li>
-            <strong>Download APWorld File</strong>: Download the latest NRFTW APWorld file from <a href="https://www.nexusmods.com/norestforthewicked/mods/33" className="link-button">Here</a>.
+            <strong>Download APWorld File</strong>: Download the latest NRFTW APWorld file from <a href="https://github.com/arthurstreeter/NRFTW-Archipelago-APWorld-Generator/blob/main/APWorld/nrftw.apworld" className="link-button">Here</a>.
           </li>
           <li>
-            <strong>Add Archipelago DLL</strong>: Download Archipelago.Multiclient.Net.dll v6.7.0 from <a href="https://www.nexusmods.com/norestforthewicked/mods/33" className="link-button">Nexus Mods</a> or compile it yourself from <a href="https://github.com/ArchipelagoMW/ArchipelagoMulticlient.Net" className="link-button">GitHub</a>.
+            <strong>Add APWorld to Archipelago</strong>: This has been tested with Archipelago 0.6.6+
           </li>
           <li>
-            <strong>Generate Configuration</strong>: Use the Generator tab on this site to create your YAML file.
+            <strong>Generate World</strong>: Place Player YAML files in your <span className="code-text">..\Archipelago\Players</span> folder and Generate the world.
           </li>
           <li>
-            <strong>Send your YAML To Host</strong>: They will add it to their server.
-          </li>
-          <li>
-            <strong>Create AP Config file</strong>: Create a new AP config file in the GameDir/Mods folder, next to the other DLLs, named <span className="code-text">archipelago_config.json</span><div className="media-container">
-              <img src={ModsDirectory} alt="Mods Directory" className="media-element" style={{ width: '50%', height: '50%', objectFit: 'contain', margin: 'auto' }} />
-              <p className="media-caption">The mods directory with the Archipelago config file.</p>
-            </div>
-          </li>
-          <li>
-            <strong>Run the mod</strong>: Run the mod and enjoy!
+            <strong>Host World</strong>: Either host it locally, or upload it to <a href="https://archipelago.gg/uploads" className="link-button">Archipelago.gg</a> and have them host!
           </li>
         </ol>
 
@@ -202,9 +206,8 @@ function App() {
 
         <h3>How You Can Help</h3>
         <p>
-          We are looking for testers! Play the mod, find bugs, and share your feedback in the discord channel.
-          If you are a developer, feel free to contribute to the
-          <a href="https://github.com/arthurstreeter/NRFTW-Archipelago-APWorld-Generator" className="link-button">GitHub Repository</a>.
+          We are looking for testers! Play the APWorld, find bugs, and share your feedback in the discord channel.
+          <br /> Thoughts on tracked events and template runs are welcome!
         </p>
       </div>
     </div>
@@ -309,10 +312,10 @@ function App() {
     <div id="root">
       <nav className="nav-bar">
         <button
-          className={`nav-link ${currentPage === 'requirements' ? 'active' : ''}`}
-          onClick={() => setCurrentPage('requirements')}
+          className={`nav-link ${currentPage === 'about' ? 'active' : ''}`}
+          onClick={() => setCurrentPage('about')}
         >
-          Requirements
+          About
         </button>
         <button
           className={`nav-link ${currentPage === 'setup' ? 'active' : ''}`}
@@ -335,12 +338,13 @@ function App() {
       </nav>
 
       <header>
-        <h1>NRFTW ARCHIPELAGO</h1>
+        <h1>
+          Wicked Archipelago</h1>
         <p>No Rest For The Wicked Multiworld Randomizer</p>
       </header>
 
       <main className="main-content">
-        {currentPage === 'requirements' && renderRequirements()}
+        {currentPage === 'about' && renderAbout()}
         {currentPage === 'setup' && renderSetup()}
         {currentPage === 'generator' && renderGenerator()}
         {currentPage === 'help' && renderHelp()}

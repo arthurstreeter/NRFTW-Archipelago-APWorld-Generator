@@ -436,3 +436,7 @@ select:focus {
 ::-webkit-scrollbar-thumb:hover {
   background: #3a3a4d;
 }
+
+.highlight {
+  color: var(--accent-color);
+}

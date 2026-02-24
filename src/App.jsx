@@ -11,7 +11,7 @@ import ModsDirectory from './assets/ModsDirectory.png'
 function App() {
   const [currentPage, setCurrentPage] = useState('generator')
   const [activeTab, setActiveTab] = useState(optionsData[0].category)
-  const [playerName, setPlayerName] = useState('TestPlayer')
+  const [playerName, setPlayerName] = useState('PlayerName')
   const [options, setOptions] = useState(() => {
     const initialState = {}
     optionsData.forEach(cat => {
@@ -161,6 +161,44 @@ function App() {
             <strong>Run the mod</strong>: Run the mod and enjoy!
           </li>
         </ol>
+
+        <h2>General Tips on Generating a Run</h2>
+        <ul>
+          <li>
+            You'll need tools for Harvesting checks, so I'd advise you
+            <span className="highlight"> not to randomize Tool spawns</span>.
+          </li>
+
+          <li>
+            Due to the nature of item randomization, don't expect to grind through crafting/city building.
+            Unless you wish to do that, expect a longer playthrough! Reduced crafting costs may be added in the future.
+          </li>
+
+          <li>
+            There are currently filler items added if necessary, such as
+            <strong> Plague Ichor</strong> and certain <strong>Embers</strong> for modifying gear.
+          </li>
+
+          <li>
+            An <span className="highlight">XP Multiplier</span> will help greatly when getting randomized gear,
+            especially if you choose higher-tier items to spawn.
+          </li>
+
+          <li>
+            If you become hard-locked, press <span className="highlight"><strong>F11</strong></span> to teleport to a needed location.
+            <span className="highlight"> Be careful</span> — this opens a debug menu from the WickedRandomizer mod
+            and may allow you to skip Archipelago checks.
+          </li>
+
+          <li>
+            Is it required to start a new character? <strong>No.</strong><br />
+            Is it more fun? <strong>Yes.</strong>
+          </li>
+
+          <li>
+            <span className="highlight">Please start a new Realm!</span> This is highly suggested.
+          </li>
+        </ul>
 
         <div className="divider"></div>
 

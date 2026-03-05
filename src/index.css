@@ -337,6 +337,12 @@ input[type="range"] {
   margin-left: 4px;
 }
 
+.pool-weight-row {
+  border-left: 2px solid var(--accent, #4a9eff);
+  padding-left: 8px;
+  margin-top: 4px;
+}
+
 .objectives-total {
   padding: 8px 12px;
   margin-bottom: 8px;

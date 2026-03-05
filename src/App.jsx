@@ -86,6 +86,17 @@ function App() {
     setOptions(prev => ({ ...prev, [name]: value }))
   }
 
+  // Compute % contribution of each item pool weight (only enabled/non-zero entries count toward total)
+  const itemPoolWeightPcts = useMemo(() => {
+    const keys = ['weapon','armour','shield','trinket','tool','usable','quiver','ingredient','resource','refined_resource','material','recipe','rune','gem','house_item']
+    const total = keys.filter(k => (options[`pool_weight_${k}`] ?? 0) > 0).reduce((sum, k) => sum + (options[`pool_weight_${k}`] ?? 0), 0)
+    if (total === 0) return {}
+    return Object.fromEntries(
+      keys.filter(k => (options[`pool_weight_${k}`] ?? 0) > 0)
+          .map(k => [`pool_weight_${k}`, Math.round((options[`pool_weight_${k}`] ?? 0) / total * 100)])
+    )
+  }, [options])
+
   // Compute % contribution of each spawn weight relative to the sum of enabled types' weights
   const spawnWeightPcts = useMemo(() => {
     const types = ['boss', 'elite', 'giant', 'normal', 'critters']
@@ -438,7 +449,49 @@ function App() {
                         {s.header.description && <span className="option-desc">{s.header.description}</span>}
                       </div>
                     )}
-                    {s.header?.gridMode
+                    {s.header?.poolWeightMode
+                      ? visibleOpts.length > 0 && (
+                        <>
+                          <div className="item-toggle-grid">
+                            {visibleOpts.map(opt => {
+                              const isOn = (options[opt.name] ?? opt.default ?? 0) > 0
+                              return (
+                                <button
+                                  key={opt.name}
+                                  className={`item-toggle-btn ${isOn ? 'active' : ''}`}
+                                  onClick={() => handleOptionChange(opt.name, isOn ? 0 : (opt.default ?? 10))}
+                                  title={opt.description || opt.label}
+                                >
+                                  {opt.shortLabel || opt.label}
+                                </button>
+                              )
+                            })}
+                          </div>
+                          {visibleOpts.filter(opt => (options[opt.name] ?? opt.default ?? 0) > 0).map(opt => (
+                            <div key={opt.name} className="option-item pool-weight-row">
+                              <div className="option-header">
+                                <span className="option-label">{opt.label}</span>
+                                <span className="range-val">
+                                  {options[opt.name] ?? opt.default ?? 10}
+                                  {itemPoolWeightPcts[opt.name] !== undefined && (
+                                    <span className="range-pct"> ({itemPoolWeightPcts[opt.name]}%)</span>
+                                  )}
+                                </span>
+                              </div>
+                              <div className="range-controls">
+                                <input
+                                  type="range"
+                                  min={1}
+                                  max={opt.max}
+                                  value={options[opt.name] ?? opt.default ?? 10}
+                                  onChange={(e) => handleOptionChange(opt.name, parseInt(e.target.value, 10))}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </>
+                      )
+                      : s.header?.gridMode
                       ? visibleOpts.length > 0 && (
                         <div className="item-toggle-grid">
                           {visibleOpts.map(opt => (
@@ -470,8 +523,8 @@ function App() {
                             {opt.type === 'range' && (
                               <span className="range-val">
                                 {options[opt.name]}
-                                {spawnWeightPcts[opt.name] !== undefined && (
-                                  <span className="range-pct"> ({spawnWeightPcts[opt.name]}%)</span>
+                                {(spawnWeightPcts[opt.name] !== undefined || itemPoolWeightPcts[opt.name] !== undefined) && (
+                                  <span className="range-pct"> ({(spawnWeightPcts[opt.name] ?? itemPoolWeightPcts[opt.name])}%)</span>
                                 )}
                               </span>
                             )}

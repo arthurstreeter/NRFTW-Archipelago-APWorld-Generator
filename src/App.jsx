@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react'
 import { optionsData } from './data/optionsData'
+import { npcCatalogue } from './data/npcCatalogue'
 import './index.css'
 
 // Import assets
@@ -7,6 +8,32 @@ import FeatureBlockSample from './assets/FeatureBlockSample.png'
 import IngameMenu from './assets/IngameMenu.png'
 import SampleUnlocks from './assets/SampleUnlocks.mp4'
 import ModsDirectory from './assets/ModsDirectory.png'
+
+const FACTION_OPTION_TO_NAME = {
+  enemy_faction_balak_taw:      'BalakTaw',
+  enemy_faction_beast:          'Beast',
+  enemy_faction_boarskin:       'Boarskin',
+  enemy_faction_corrupt_cerim:  'CorruptCerim',
+  enemy_faction_fungal_human:   'FungalHuman',
+  enemy_faction_humanoid:       'Humanoid',
+  enemy_faction_lumberjack:     'Lumberjack',
+  enemy_faction_nith:           'Nith',
+  enemy_faction_none:           'None',
+  enemy_faction_plagued:        'Plagued',
+  enemy_faction_plagued_beast:  'PlaguedBeast',
+  enemy_faction_plagued_human:  'PlaguedHuman',
+  enemy_faction_prisoner:       'Prisoner',
+  enemy_faction_risen:          'Risen',
+  enemy_faction_tanth:          'Tanth',
+}
+
+const SPAWN_TYPE_OPTION = {
+  Boss:     'enemy_spawn_type_boss',
+  Elite:    'enemy_spawn_type_elite',
+  Giant:    'enemy_spawn_type_giant',
+  Normal:   'enemy_spawn_type_normal',
+  Critters: 'enemy_spawn_type_critters',
+}
 
 function App() {
   const [currentPage, setCurrentPage] = useState('about')
@@ -16,11 +43,14 @@ function App() {
     const initialState = {}
     optionsData.forEach(cat => {
       cat.options.forEach(opt => {
-        initialState[opt.name] = opt.default
+        if (opt.name !== undefined) initialState[opt.name] = opt.default
       })
     })
     return initialState
   })
+
+  const [blacklistedGuids, setBlacklistedGuids] = useState(new Set())
+  const [blacklistExpanded, setBlacklistExpanded] = useState(false)
 
   // ─── YAML Logic ──────────────────────────────────────────────────────────
 
@@ -34,14 +64,23 @@ function App() {
     optionsData.forEach(cat => {
       yaml += `  # ─── ${cat.category} ───\n`
       cat.options.forEach(opt => {
-        const val = options[opt.name]
+        if (opt.type === 'header') {
+          yaml += `\n  # ── ${opt.label} ──\n`
+          return
+        }
+        if (opt.dependsOn && options[opt.dependsOn] !== 1) return
+        const val = options[opt.name] ?? opt.default ?? 0
         yaml += `  ${opt.name}: ${val}\n`
       })
+      if (cat.category === 'Enemy Settings' && blacklistedGuids.size > 0) {
+        yaml += `\n  # ── Enemy Blacklist ──\n`
+        yaml += `  enemy_user_blacklist: "${[...blacklistedGuids].join(',')}"\n`
+      }
       yaml += `\n`
     })
 
     return yaml.trim()
-  }, [options, playerName])
+  }, [options, playerName, blacklistedGuids])
 
   const handleOptionChange = (name, value) => {
     setOptions(prev => ({ ...prev, [name]: value }))
@@ -50,7 +89,7 @@ function App() {
   const toggleAllDrops = () => {
     const activeCategory = optionsData.find(cat => cat.category === activeTab)
     const dropOptions = activeCategory.options
-      .filter(opt => opt.name.startsWith('replace_'))
+      .filter(opt => opt.name && opt.name.startsWith('replace_'))
       .map(opt => opt.name)
 
     const allOn = dropOptions.every(name => options[name] === 1)
@@ -61,6 +100,57 @@ function App() {
       newOptions[name] = nextVal
     })
     setOptions(newOptions)
+  }
+
+  const toggleEnemyBlacklist = (guid) => {
+    setBlacklistedGuids(prev => {
+      const next = new Set(prev)
+      if (next.has(guid)) next.delete(guid)
+      else next.add(guid)
+      return next
+    })
+  }
+
+  const toggleAllFactions = () => {
+    const activeCategory = optionsData.find(cat => cat.category === activeTab)
+    const factionOptions = activeCategory.options
+      .filter(opt => opt.name && opt.name.startsWith('enemy_faction_'))
+      .map(opt => opt.name)
+
+    const allOn = factionOptions.every(name => options[name] === 1)
+    const nextVal = allOn ? 0 : 1
+
+    const newOptions = { ...options }
+    factionOptions.forEach(name => {
+      newOptions[name] = nextVal
+    })
+    setOptions(newOptions)
+  }
+
+  const toggleAllReplaceTypes = () => {
+    const activeCategory = optionsData.find(cat => cat.category === activeTab)
+    const replaceTypeOptions = activeCategory.options
+      .filter(opt => opt.name && opt.name.startsWith('enemy_replace_type_'))
+      .map(opt => opt.name)
+
+    const allOn = replaceTypeOptions.every(name => options[name] === 1)
+    const nextVal = allOn ? 0 : 1
+
+    const newOptions = { ...options }
+    replaceTypeOptions.forEach(name => {
+      newOptions[name] = nextVal
+    })
+    setOptions(newOptions)
+  }
+
+  const resetEnemySettings = () => {
+    const enemyCategory = optionsData.find(cat => cat.category === 'Enemy Settings')
+    const newOptions = { ...options }
+    enemyCategory.options.forEach(opt => {
+      if (opt.name !== undefined) newOptions[opt.name] = opt.default
+    })
+    setOptions(newOptions)
+    setBlacklistedGuids(new Set())
   }
 
   const downloadYaml = () => {
@@ -277,62 +367,182 @@ function App() {
             ))}
           </div>
 
-          {activeTab === 'Randomization' && (
+          {activeTab === 'Item Settings' && (
             <button className="category_action_btn" onClick={toggleAllDrops}>
-              {activeCategory.options.filter(o => o.name.startsWith('replace_')).every(n => options[n.name] === 1)
+              {activeCategory.options.filter(o => o.name && o.name.startsWith('replace_')).every(n => options[n.name] === 1)
                 ? 'Disable All Drops' : 'Randomize All Drops'}
             </button>
           )}
 
+          {activeTab === 'Enemy Settings' && (
+            <div className="category_action_btn_group">
+              <button className="category_action_btn" onClick={toggleAllReplaceTypes}>
+                {activeCategory.options.filter(o => o.name && o.name.startsWith('enemy_replace_type_')).every(n => options[n.name] === 1)
+                  ? 'Un-randomize All Units' : 'Randomize All Units'}
+              </button>
+              <button className="category_action_btn" onClick={toggleAllFactions}>
+                {activeCategory.options.filter(o => o.name && o.name.startsWith('enemy_faction_')).every(n => options[n.name] === 1)
+                  ? 'Disable All Factions' : 'Enable All Factions'}
+              </button>
+              <button className="category_action_btn category_action_btn--reset" onClick={resetEnemySettings}>
+                Reset to Defaults
+              </button>
+            </div>
+          )}
+
           <div className="option-group">
-            {activeCategory.options.map(opt => (
-              <div key={opt.name} className="option-item">
-                <div className="option-header">
-                  <span className="option-label">{opt.label}</span>
-                  {opt.type === 'toggle' && (
-                    <label className="switch">
-                      <input
-                        type="checkbox"
-                        checked={options[opt.name] === 1}
-                        onChange={(e) => handleOptionChange(opt.name, e.target.checked ? 1 : 0)}
-                      />
-                      <span className="slider"></span>
-                    </label>
-                  )}
-                  {opt.type === 'range' && (
-                    <span className="range-val">{options[opt.name]}</span>
-                  )}
-                </div>
+            {(() => {
+              // Split options into header-delimited segments
+              const segments = []
+              let seg = { header: null, opts: [] }
+              activeCategory.options.forEach(opt => {
+                if (opt.type === 'header') {
+                  if (seg.header !== null || seg.opts.length > 0) segments.push(seg)
+                  seg = { header: opt, opts: [] }
+                } else {
+                  seg.opts.push(opt)
+                }
+              })
+              if (seg.header !== null || seg.opts.length > 0) segments.push(seg)
 
-                {opt.description && (
-                  <span className="option-desc">{opt.description}</span>
-                )}
+              return segments.map((s, si) => {
+                const visibleOpts = s.opts.filter(opt => !opt.dependsOn || options[opt.dependsOn] === 1)
 
-                {opt.type === 'range' && (
-                  <div className="range-controls">
-                    <input
-                      type="range"
-                      min={opt.min}
-                      max={opt.max}
-                      value={options[opt.name]}
-                      onChange={(e) => handleOptionChange(opt.name, parseInt(e.target.value, 10))}
-                    />
-                  </div>
-                )}
+                return (
+                  <React.Fragment key={`seg-${si}`}>
+                    {s.header && (
+                      <div className="option-section-header">
+                        <span>{s.header.label}</span>
+                        {s.header.description && <span className="option-desc">{s.header.description}</span>}
+                      </div>
+                    )}
+                    {s.header?.gridMode
+                      ? visibleOpts.length > 0 && (
+                        <div className="item-toggle-grid">
+                          {visibleOpts.map(opt => (
+                            <button
+                              key={opt.name}
+                              className={`item-toggle-btn ${options[opt.name] === 1 ? 'active' : ''}`}
+                              onClick={() => handleOptionChange(opt.name, options[opt.name] === 1 ? 0 : 1)}
+                              title={opt.label}
+                            >
+                              {opt.shortLabel || opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      )
+                      : visibleOpts.map(opt => (
+                        <div key={opt.name} className="option-item">
+                          <div className="option-header">
+                            <span className="option-label">{opt.label}</span>
+                            {opt.type === 'toggle' && (
+                              <label className="switch">
+                                <input
+                                  type="checkbox"
+                                  checked={options[opt.name] === 1}
+                                  onChange={(e) => handleOptionChange(opt.name, e.target.checked ? 1 : 0)}
+                                />
+                                <span className="slider"></span>
+                              </label>
+                            )}
+                            {opt.type === 'range' && (
+                              <span className="range-val">{options[opt.name]}</span>
+                            )}
+                          </div>
+                          {opt.description && <span className="option-desc">{opt.description}</span>}
+                          {opt.type === 'range' && (
+                            <div className="range-controls">
+                              <input
+                                type="range"
+                                min={opt.min}
+                                max={opt.max}
+                                value={options[opt.name]}
+                                onChange={(e) => handleOptionChange(opt.name, parseInt(e.target.value, 10))}
+                              />
+                            </div>
+                          )}
+                          {opt.type === 'choice' && (
+                            <select
+                              value={options[opt.name]}
+                              onChange={(e) => handleOptionChange(opt.name, e.target.value)}
+                            >
+                              {opt.options.map(o => (
+                                <option key={o} value={o}>{o}</option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      ))
+                    }
+                  </React.Fragment>
+                )
+              })
+            })()}
+          </div>
 
-                {opt.type === 'choice' && (
-                  <select
-                    value={options[opt.name]}
-                    onChange={(e) => handleOptionChange(opt.name, e.target.value)}
+          {activeTab === 'Enemy Settings' && (
+            <div className="blacklist-section">
+              <div className="blacklist-header" onClick={() => setBlacklistExpanded(x => !x)}>
+                <span>{blacklistExpanded ? '▲' : '▼'} Unit Blacklist</span>
+                <span className="blacklist-count">
+                  {blacklistedGuids.size > 0 ? `${blacklistedGuids.size} blacklisted` : 'none blacklisted'}
+                </span>
+                {blacklistedGuids.size > 0 && (
+                  <button
+                    className="blacklist-clear-btn"
+                    onClick={(e) => { e.stopPropagation(); setBlacklistedGuids(new Set()) }}
                   >
-                    {opt.options.map(o => (
-                      <option key={o} value={o}>{o}</option>
-                    ))}
-                  </select>
+                    Allow All
+                  </button>
                 )}
               </div>
-            ))}
-          </div>
+              {blacklistExpanded && (() => {
+                // Enabled factions from faction filter toggles; empty set = all allowed
+                const enabledFactions = new Set(
+                  Object.entries(FACTION_OPTION_TO_NAME)
+                    .filter(([key]) => options[key] === 1)
+                    .map(([, name]) => name)
+                )
+                const factionFilterActive = enabledFactions.size > 0
+                const isEligible = (enemy) => {
+                  if (!factionFilterActive) return true
+                  return enemy.faction.split(',').map(f => f.trim()).some(f => enabledFactions.has(f))
+                }
+
+                const groups = ['Boss', 'Elite', 'Giant', 'Normal', 'Critters']
+                  .filter(type => options[SPAWN_TYPE_OPTION[type]] === 1)
+                  .map(type => ({ type, enemies: npcCatalogue[type].filter(isEligible) }))
+                  .filter(g => g.enemies.length > 0)
+
+                return (
+                  <div className="blacklist-content">
+                    {groups.length === 0
+                      ? <span className="option-desc">No eligible enemies match the current spawn pool settings.</span>
+                      : groups.map(({ type, enemies }) => (
+                        <div key={type} className="blacklist-type-group">
+                          <div className="blacklist-type-header">
+                            {type} <span className="blacklist-type-count">({enemies.length})</span>
+                          </div>
+                          <div className="blacklist-grid">
+                            {enemies.map(enemy => (
+                              <button
+                                key={enemy.guid}
+                                className={`blacklist-enemy-btn ${blacklistedGuids.has(enemy.guid) ? 'blacklisted' : ''}`}
+                                onClick={() => toggleEnemyBlacklist(enemy.guid)}
+                                title={`Faction: ${enemy.faction}`}
+                              >
+                                {enemy.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))
+                    }
+                  </div>
+                )
+              })()}
+            </div>
+          )}
         </div>
 
         <div className="preview-panel">

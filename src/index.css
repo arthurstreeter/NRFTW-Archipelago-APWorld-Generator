@@ -237,6 +237,30 @@ header p {
   box-shadow: 0 0 15px var(--accent-glow);
 }
 
+.category_action_btn_group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.category_action_btn_group .category_action_btn {
+  margin-bottom: 0;
+  flex: 1;
+}
+
+.category_action_btn--reset {
+  border-color: #666;
+  color: #888;
+}
+
+.category_action_btn--reset:hover {
+  background: #444;
+  color: var(--text-primary);
+  border-color: #888;
+  box-shadow: none;
+}
+
 .option-group {
   display: flex;
   flex-direction: column;
@@ -420,6 +444,40 @@ select:focus {
   outline: none;
 }
 
+/* ─── Item Toggle Grid ────────────────────────────────────── */
+
+.item-toggle-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px 0 8px;
+}
+
+.item-toggle-btn {
+  padding: 5px 14px;
+  background: var(--input-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: var(--transition-speed);
+  white-space: nowrap;
+}
+
+.item-toggle-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--text-primary);
+}
+
+.item-toggle-btn.active {
+  background: rgba(201, 162, 39, 0.18);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  font-weight: 600;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -439,4 +497,154 @@ select:focus {
 
 .highlight {
   color: var(--accent-color);
+}
+
+.option-section-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 4px 6px;
+  border-bottom: 1px solid var(--border-color);
+  margin-top: 4px;
+}
+
+.option-section-header > span:first-child {
+  color: var(--accent-color);
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.option-section-header .option-desc {
+  font-size: 0.8rem;
+}
+
+.code-text {
+  font-family: 'Fira Code', 'Courier New', monospace;
+  background: var(--input-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border-color);
+  margin: 30px 0;
+}
+
+/* ─── Enemy Blacklist ─────────────────────────────────────── */
+
+.blacklist-section {
+  margin-top: 24px;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.blacklist-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--input-bg);
+  cursor: pointer;
+  user-select: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent-color);
+  transition: var(--transition-speed);
+}
+
+.blacklist-header:hover {
+  background: var(--hover-bg);
+}
+
+.blacklist-count {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: auto;
+}
+
+.blacklist-clear-btn {
+  padding: 3px 10px;
+  background: transparent;
+  color: var(--accent-color);
+  border: 1px solid var(--accent-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: var(--transition-speed);
+}
+
+.blacklist-clear-btn:hover {
+  background: var(--accent-color);
+  color: #000;
+}
+
+.blacklist-content {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--panel-bg);
+}
+
+.blacklist-type-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.blacklist-type-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent-color);
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.blacklist-type-count {
+  color: var(--text-secondary);
+  font-weight: 400;
+}
+
+.blacklist-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.blacklist-enemy-btn {
+  padding: 4px 10px;
+  background: var(--input-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.78rem;
+  transition: var(--transition-speed);
+  white-space: nowrap;
+}
+
+.blacklist-enemy-btn:hover {
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+}
+
+.blacklist-enemy-btn.blacklisted {
+  background: rgba(180, 40, 40, 0.25);
+  border-color: #c04040;
+  color: #f08080;
 }

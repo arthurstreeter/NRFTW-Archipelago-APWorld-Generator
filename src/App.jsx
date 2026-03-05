@@ -86,6 +86,18 @@ function App() {
     setOptions(prev => ({ ...prev, [name]: value }))
   }
 
+  // Compute % contribution of each spawn weight relative to the sum of enabled types' weights
+  const spawnWeightPcts = useMemo(() => {
+    const types = ['boss', 'elite', 'giant', 'normal', 'critters']
+    const total = types
+      .filter(t => options[`enemy_spawn_type_${t}`] === 1)
+      .reduce((sum, t) => sum + (options[`enemy_spawn_weight_${t}`] ?? 0), 0)
+    if (total === 0) return {}
+    return Object.fromEntries(
+      types.map(t => [`enemy_spawn_weight_${t}`, Math.round((options[`enemy_spawn_weight_${t}`] ?? 0) / total * 100)])
+    )
+  }, [options])
+
   const toggleAllDrops = () => {
     const activeCategory = optionsData.find(cat => cat.category === activeTab)
     const dropOptions = activeCategory.options
@@ -367,6 +379,16 @@ function App() {
             ))}
           </div>
 
+          {activeTab === 'Objectives' && (() => {
+            const objNames = ['crucible_runs','crucible_floors_required','crucible_floor_5_required','crucible_floor_10_required','activities_required','parries_required','whispers_required','keys_required','harvests_required','unique_enemies_required','chests_required','shinies_required']
+            const totalChecks = objNames.reduce((sum, n) => sum + (options[n] ?? 0), 0)
+            return (
+              <div className="objectives-total">
+                Total Checks: <strong>{totalChecks}</strong>
+              </div>
+            )
+          })()}
+
           {activeTab === 'Item Settings' && (
             <button className="category_action_btn" onClick={toggleAllDrops}>
               {activeCategory.options.filter(o => o.name && o.name.startsWith('replace_')).every(n => options[n.name] === 1)
@@ -446,7 +468,12 @@ function App() {
                               </label>
                             )}
                             {opt.type === 'range' && (
-                              <span className="range-val">{options[opt.name]}</span>
+                              <span className="range-val">
+                                {options[opt.name]}
+                                {spawnWeightPcts[opt.name] !== undefined && (
+                                  <span className="range-pct"> ({spawnWeightPcts[opt.name]}%)</span>
+                                )}
+                              </span>
                             )}
                           </div>
                           {opt.description && <span className="option-desc">{opt.description}</span>}
